@@ -1,0 +1,13 @@
+{
+  "name": "study-abroad-ai-job-search-video",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "lint": "npx hyperframes lint",
+    "inspect": "npx hyperframes inspect --samples 12",
+    "render": "npx hyperframes render --output exports/study_abroad_ai_job_search_12s_720p_hyperframes.mp4 --fps 30 --quality standard"
+  },
+  "devDependencies": {
+    "hyperframes": "latest"
+  }
+}

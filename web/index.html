@@ -1,0 +1,1033 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>发发布ai小助手</title>
+    <style>
+      :root {
+        --bg: #fff8ef;
+        --panel: rgba(255, 255, 255, 0.86);
+        --panel-solid: #ffffff;
+        --panel-soft: #fffaf2;
+        --line: #f0e3d5;
+        --text: #2f2a25;
+        --muted: #8a7d70;
+        --blue: #6aa7bf;
+        --blue-soft: #edf8fb;
+        --green: #a6d830;
+        --green-soft: #f3ffd8;
+        --pink: #ff8fb5;
+        --pink-soft: #fff0f5;
+        --orange: #d99138;
+        --orange-soft: #fff3df;
+        --shadow: 0 22px 54px rgba(145, 103, 65, 0.12);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        color: var(--text);
+        background:
+          radial-gradient(circle at 10% 18%, rgba(255, 173, 196, 0.32), transparent 28%),
+          radial-gradient(circle at 88% 8%, rgba(210, 255, 62, 0.34), transparent 22%),
+          radial-gradient(circle at 70% 90%, rgba(157, 213, 230, 0.28), transparent 26%),
+          var(--bg);
+        font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      }
+
+      button,
+      input,
+      textarea,
+      select {
+        font: inherit;
+      }
+
+      .app {
+        min-height: 100vh;
+        display: block;
+      }
+
+      .sidebar {
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        min-height: 78px;
+        padding: 14px 28px;
+        display: flex;
+        align-items: center;
+        gap: 28px;
+        background: rgba(255, 250, 242, 0.78);
+        color: var(--text);
+        border-bottom: 1px solid rgba(240, 227, 213, 0.78);
+        backdrop-filter: blur(18px);
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 0;
+        min-width: 286px;
+      }
+
+      .brand-mark {
+        width: 46px;
+        height: 46px;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(145deg, #d7ff32, #f7ff9a);
+        color: #2d2a21;
+        font-weight: 800;
+        box-shadow: 0 10px 22px rgba(166, 216, 48, 0.28);
+      }
+
+      .brand-logo {
+        width: 30px;
+        height: 34px;
+      }
+
+      .brand-title {
+        font-weight: 800;
+        line-height: 1.25;
+        font-size: 17px;
+      }
+
+      .brand-subtitle {
+        margin-top: 3px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .nav {
+        display: flex;
+        gap: 8px;
+        flex: 1;
+        justify-content: center;
+      }
+
+      .nav button {
+        border: 0;
+        border-radius: 999px;
+        padding: 12px 14px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #574f45;
+        background: transparent;
+        cursor: pointer;
+        text-align: left;
+      }
+
+      .nav button.active,
+      .nav button:hover {
+        color: #2f2a25;
+        background: rgba(255, 255, 255, 0.78);
+        box-shadow: 0 8px 22px rgba(145, 103, 65, 0.08);
+      }
+
+      .nav-icon {
+        width: 22px;
+        text-align: center;
+        font-weight: 800;
+      }
+
+      .sidebar-note {
+        position: static;
+        max-width: 250px;
+        padding: 14px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.62);
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.65;
+      }
+
+      .main {
+        padding: 30px;
+        max-width: 1280px;
+        margin: 0 auto;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        margin-bottom: 22px;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 28px;
+        letter-spacing: 0;
+      }
+
+      .page-caption {
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .status-strip {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: var(--panel);
+        box-shadow: var(--shadow);
+        white-space: nowrap;
+      }
+
+      .dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: var(--green);
+        box-shadow: 0 0 0 4px rgba(166, 216, 48, 0.22);
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.4fr) minmax(360px, 0.8fr);
+        gap: 20px;
+        align-items: start;
+      }
+
+      .stack {
+        display: grid;
+        gap: 20px;
+      }
+
+      .section {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(16px);
+        overflow: hidden;
+      }
+
+      .section-header {
+        padding: 18px 20px;
+        border-bottom: 1px solid var(--line);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+      }
+
+      .section-title {
+        font-weight: 800;
+        font-size: 17px;
+      }
+
+      .section-hint {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .section-body {
+        padding: 20px;
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+      }
+
+      .field {
+        display: grid;
+        gap: 8px;
+      }
+
+      .field.full {
+        grid-column: 1 / -1;
+      }
+
+      label {
+        color: #35495b;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      input,
+      textarea,
+      select {
+        width: 100%;
+        border: 1px solid #cfdce6;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.92);
+        color: var(--text);
+        padding: 12px 13px;
+        outline: none;
+      }
+
+      textarea {
+        min-height: 112px;
+        resize: vertical;
+        line-height: 1.55;
+      }
+
+      input:focus,
+      textarea:focus,
+      select:focus {
+        border-color: var(--blue);
+        box-shadow: 0 0 0 3px rgba(22, 119, 199, 0.12);
+      }
+
+      .dropzone {
+        min-height: 148px;
+        border: 1px dashed #9db4c6;
+        border-radius: 18px;
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 250, 242, 0.78));
+        display: grid;
+        place-items: center;
+        text-align: center;
+        padding: 18px;
+      }
+
+      .dropzone strong {
+        display: block;
+        margin-bottom: 8px;
+      }
+
+      .dropzone span {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .platform-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .platform-card {
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 16px;
+        background: var(--panel-soft);
+        cursor: pointer;
+      }
+
+      .platform-card.selected {
+        border-color: rgba(166, 216, 48, 0.88);
+        background: linear-gradient(180deg, rgba(243, 255, 216, 0.84), rgba(255, 255, 255, 0.7));
+      }
+
+      .platform-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+
+      .platform-name {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 800;
+      }
+
+      .platform-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 12px;
+        display: grid;
+        place-items: center;
+        background: #2f2a25;
+        color: #fff;
+        font-weight: 900;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        padding: 5px 9px;
+        font-size: 12px;
+        font-weight: 750;
+      }
+
+      .badge.ok {
+        color: #147252;
+        background: var(--green-soft);
+      }
+
+      .badge.warn {
+        color: #96580f;
+        background: var(--orange-soft);
+      }
+
+      .platform-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 14px;
+      }
+
+      .btn {
+        border: 0;
+        border-radius: 999px;
+        padding: 11px 14px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        color: var(--text);
+        background: #f5eadf;
+        font-weight: 750;
+        cursor: pointer;
+      }
+
+      .btn.primary {
+        color: #2d2a21;
+        background: #d7ff32;
+      }
+
+      .btn.success {
+        color: #2d2a21;
+        background: var(--green);
+      }
+
+      .btn.ghost {
+        background: transparent;
+        border: 1px solid var(--line);
+      }
+
+      .btn:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+      }
+
+      .actions {
+        display: flex;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 18px;
+      }
+
+      .mode-row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .mode {
+        min-width: 142px;
+        border: 1px solid var(--line);
+        background: #fff;
+        border-radius: 16px;
+        padding: 12px;
+        cursor: pointer;
+      }
+
+      .mode.selected {
+        border-color: var(--green);
+        background: var(--green-soft);
+      }
+
+      .mode strong {
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      .mode span {
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .progress-list {
+        display: grid;
+        gap: 12px;
+      }
+
+      .step {
+        display: grid;
+        grid-template-columns: 28px minmax(0, 1fr) auto;
+        gap: 10px;
+        align-items: start;
+        padding: 12px;
+        border-radius: 16px;
+        background: var(--panel-soft);
+        border: 1px solid var(--line);
+      }
+
+      .step-index {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        color: #fff;
+        background: var(--pink);
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .step.done .step-index {
+        background: var(--green);
+      }
+
+      .step-title {
+        font-weight: 800;
+      }
+
+      .step-desc {
+        margin-top: 3px;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.5;
+      }
+
+      .json-box,
+      .log-box {
+        border-radius: 18px;
+        background: #fff8ef;
+        color: #463d33;
+        border: 1px solid var(--line);
+        padding: 16px;
+        overflow: auto;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 12px;
+        line-height: 1.65;
+        white-space: pre-wrap;
+      }
+
+      .log-box {
+        min-height: 164px;
+      }
+
+      .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .metric {
+        padding: 14px;
+        border-radius: 16px;
+        background: var(--panel-soft);
+        border: 1px solid var(--line);
+      }
+
+      .metric-value {
+        font-size: 22px;
+        font-weight: 850;
+      }
+
+      .metric-label {
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .danger-note {
+        margin-top: 14px;
+        padding: 12px;
+        border-radius: 16px;
+        color: #7c3f14;
+        background: var(--orange-soft);
+        font-size: 13px;
+        line-height: 1.6;
+      }
+
+      .command-box {
+        margin-top: 14px;
+        display: grid;
+        gap: 8px;
+      }
+
+      .command-line {
+        padding: 10px 12px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.74);
+        border: 1px solid var(--line);
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 12px;
+        color: #463d33;
+        overflow-wrap: anywhere;
+      }
+
+      @media (max-width: 1050px) {
+        .sidebar {
+          position: static;
+          height: auto;
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .sidebar-note {
+          margin-top: 18px;
+          max-width: none;
+        }
+
+        .layout {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 720px) {
+        .main {
+          padding: 18px;
+        }
+
+        .topbar,
+        .section-header {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .form-grid,
+        .platform-grid,
+        .summary-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .status-strip {
+          width: 100%;
+          white-space: normal;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">
+            <svg class="brand-logo" viewBox="0 0 48 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="9" y="5" width="30" height="42" rx="11" fill="#fffdf6" stroke="#2f2a25" stroke-width="3" />
+              <circle cx="18" cy="20" r="3" fill="#2f2a25" />
+              <circle cx="30" cy="20" r="3" fill="#2f2a25" />
+              <path d="M18 31c4 4 8 4 12 0" stroke="#2f2a25" stroke-width="3" stroke-linecap="round" />
+              <path d="M24 47v5" stroke="#2f2a25" stroke-width="3" stroke-linecap="round" />
+              <path d="M16 52h16" stroke="#2f2a25" stroke-width="3" stroke-linecap="round" />
+              <path d="M38 14l5-4" stroke="#ff8fb5" stroke-width="4" stroke-linecap="round" />
+            </svg>
+          </div>
+          <div>
+            <div class="brand-title">发发布ai小助手</div>
+            <div class="brand-subtitle">你的二平台发布助手</div>
+          </div>
+        </div>
+
+        <nav class="nav" aria-label="主导航">
+          <button class="active" type="button"><span class="nav-icon">✦</span>发布视频</button>
+          <button type="button"><span class="nav-icon">⌘</span>发布日历</button>
+          <button type="button"><span class="nav-icon">▣</span>视频库</button>
+          <button type="button"><span class="nav-icon">◌</span>数据看板</button>
+          <button type="button"><span class="nav-icon">⚙</span>平台账号</button>
+        </nav>
+
+        <div class="sidebar-note">
+          默认停在发布确认页。扫码、验证码和最终发布都由你确认。
+        </div>
+      </aside>
+
+      <main class="main">
+        <div class="topbar">
+          <div>
+            <h1>发发布ai小助手</h1>
+            <div class="page-caption">上传本地 MP4，填写标题、正文和标签，一次准备抖音与视频号发布。</div>
+          </div>
+          <div class="status-strip" aria-label="系统状态">
+            <span class="dot"></span>
+            <strong>本地模式</strong>
+            <span class="section-hint">账号状态保存在 .publisher_data</span>
+          </div>
+        </div>
+
+        <div class="layout">
+          <div class="stack">
+            <section class="section">
+              <div class="section-header">
+                <div>
+                  <div class="section-title">创建发布任务</div>
+                  <div class="section-hint">第一版先生成任务配置，后续接入后端执行 Playwright 上传。</div>
+                </div>
+                <button class="btn ghost" id="loadSample" type="button">载入示例</button>
+              </div>
+
+              <div class="section-body">
+                <div class="form-grid">
+                  <div class="field full">
+                    <label for="videoFile">本地视频</label>
+                    <label class="dropzone" for="videoFile">
+                      <input id="videoFile" type="file" accept="video/mp4,video/*" hidden />
+                      <strong id="fileName">选择或拖入 MP4 视频</strong>
+                      <span>建议 9:16 竖屏，平台上传前请确认内容合规。</span>
+                    </label>
+                  </div>
+
+                  <div class="field">
+                    <label for="title">标题</label>
+                    <input id="title" value="美国求职，别再手动改简历" />
+                  </div>
+
+                  <div class="field">
+                    <label for="account">账号别名</label>
+                    <input id="account" value="creator" />
+                  </div>
+
+                  <div class="field full">
+                    <label for="description">正文 / 简介</label>
+                    <textarea id="description">用 AI 分析 JD、优化 LinkedIn 和英文简历，再生成 Cover Letter，还能模拟英文面试。</textarea>
+                  </div>
+
+                  <div class="field">
+                    <label for="tags">推荐标签</label>
+                    <input id="tags" value="AI,留学生求职,美国求职" />
+                  </div>
+
+                  <div class="field">
+                    <label>发布方式</label>
+                    <div class="mode-row">
+                      <button class="mode selected" type="button" data-mode="confirm">
+                        <strong>发布前确认</strong>
+                        <span>推荐，停在确认页</span>
+                      </button>
+                      <button class="mode" type="button" data-mode="auto">
+                        <strong>自动发布</strong>
+                        <span>二期能力</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="danger-note">
+                  MVP 默认不点击最终发布按钮。系统只负责打开后台、上传视频、填写信息，最后由用户人工检查。
+                </div>
+              </div>
+            </section>
+
+            <section class="section">
+              <div class="section-header">
+                <div>
+                  <div class="section-title">选择平台</div>
+                  <div class="section-hint">参考 uploader 架构，抖音和视频号各自独立维护。</div>
+                </div>
+              </div>
+              <div class="section-body">
+                <div class="platform-grid">
+                  <article class="platform-card selected" data-platform="douyin">
+                    <div class="platform-head">
+                      <div class="platform-name"><span class="platform-icon">抖</span>抖音</div>
+                      <span class="badge ok">已选择</span>
+                    </div>
+                    <div class="section-hint">创作者中心上传视频，支持标题、简介、标签。</div>
+                    <div class="platform-actions">
+                      <button class="btn" type="button">登录</button>
+                      <button class="btn ghost" type="button">检查</button>
+                    </div>
+                  </article>
+
+                  <article class="platform-card selected" data-platform="wechat_channels">
+                    <div class="platform-head">
+                      <div class="platform-name"><span class="platform-icon">视</span>视频号</div>
+                      <span class="badge ok">已选择</span>
+                    </div>
+                    <div class="section-hint">视频号助手上传视频，微信扫码登录。</div>
+                    <div class="platform-actions">
+                      <button class="btn" type="button">登录</button>
+                      <button class="btn ghost" type="button">检查</button>
+                    </div>
+                  </article>
+                </div>
+
+                <div class="actions">
+                  <button class="btn ghost" type="button" id="previewJson">预览任务 JSON</button>
+                  <button class="btn primary" type="button" id="createTask">创建发布任务</button>
+                  <button class="btn success" type="button" id="startPublish">开始上传流程</button>
+                </div>
+              </div>
+            </section>
+
+            <section class="section">
+              <div class="section-header">
+                <div>
+                  <div class="section-title">任务 JSON 预览</div>
+                  <div class="section-hint">后端会读取这个结构执行 publish。</div>
+                </div>
+              </div>
+              <div class="section-body">
+                <pre class="json-box" id="jsonPreview"></pre>
+                <div class="command-box" id="commandBox"></div>
+              </div>
+            </section>
+          </div>
+
+          <aside class="stack">
+            <section class="section">
+              <div class="section-header">
+                <div>
+                  <div class="section-title">账号状态</div>
+                  <div class="section-hint">多账号通过 account 名称隔离。</div>
+                </div>
+              </div>
+              <div class="section-body">
+                <div class="summary-grid">
+                  <div class="metric">
+                    <div class="metric-value">2</div>
+                    <div class="metric-label">目标平台</div>
+                  </div>
+                  <div class="metric">
+                    <div class="metric-value">0</div>
+                    <div class="metric-label">自动发布</div>
+                  </div>
+                  <div class="metric">
+                    <div class="metric-value">1</div>
+                    <div class="metric-label">人工确认</div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="section">
+              <div class="section-header">
+                <div>
+                  <div class="section-title">发布进度</div>
+                  <div class="section-hint">从任务读取到平台确认页。</div>
+                </div>
+              </div>
+              <div class="section-body">
+                <div class="progress-list" id="progressList">
+                  <div class="step done">
+                    <div class="step-index">1</div>
+                    <div>
+                      <div class="step-title">读取任务</div>
+                      <div class="step-desc">校验视频、标题、正文、标签和平台。</div>
+                    </div>
+                    <span class="badge ok">就绪</span>
+                  </div>
+                  <div class="step">
+                    <div class="step-index">2</div>
+                    <div>
+                      <div class="step-title">检查登录态</div>
+                      <div class="step-desc">读取 .publisher_data 中的平台账号状态。</div>
+                    </div>
+                    <span class="badge warn">待执行</span>
+                  </div>
+                  <div class="step">
+                    <div class="step-index">3</div>
+                    <div>
+                      <div class="step-title">上传视频</div>
+                      <div class="step-desc">打开抖音 / 视频号发布页并选择本地 MP4。</div>
+                    </div>
+                    <span class="badge warn">待执行</span>
+                  </div>
+                  <div class="step">
+                    <div class="step-index">4</div>
+                    <div>
+                      <div class="step-title">填写信息</div>
+                      <div class="step-desc">填写标题、简介、推荐标签。</div>
+                    </div>
+                    <span class="badge warn">待执行</span>
+                  </div>
+                  <div class="step">
+                    <div class="step-index">5</div>
+                    <div>
+                      <div class="step-title">发布前确认</div>
+                      <div class="step-desc">停在平台确认页，等待用户检查并点击发布。</div>
+                    </div>
+                    <span class="badge warn">待执行</span>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="section">
+              <div class="section-header">
+                <div>
+                  <div class="section-title">任务日志</div>
+                  <div class="section-hint">这里展示将来后端返回的执行日志。</div>
+                </div>
+              </div>
+              <div class="section-body">
+                <pre class="log-box" id="logBox">[ready] 等待创建发布任务
+[safe] 默认不会点击最终发布按钮</pre>
+              </div>
+            </section>
+          </aside>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      const state = {
+        file: "hyperframes/finalvideo.mp4",
+        mode: "confirm",
+        platforms: ["douyin", "wechat_channels"],
+      };
+
+      const $ = (id) => document.getElementById(id);
+
+      function apiAvailable() {
+        return location.protocol === "http:" || location.protocol === "https:";
+      }
+
+      function collectTask() {
+        const tags = $("tags").value
+          .split(",")
+          .map((tag) => tag.trim())
+          .filter(Boolean);
+
+        return {
+          video: state.file,
+          title: $("title").value.trim(),
+          description: $("description").value.trim(),
+          tags,
+          platforms: state.platforms,
+          account: $("account").value.trim() || "creator",
+          publish_now: state.mode === "auto",
+        };
+      }
+
+      function renderJson() {
+        $("jsonPreview").textContent = JSON.stringify(collectTask(), null, 2);
+      }
+
+      function renderCommands(commands) {
+        if (!commands) return;
+        $("commandBox").innerHTML = Object.entries(commands)
+          .map(([name, command]) => `<div class="command-line">${name}: ${command}</div>`)
+          .join("");
+      }
+
+      function log(line) {
+        $("logBox").textContent += `\n${line}`;
+        $("logBox").scrollTop = $("logBox").scrollHeight;
+      }
+
+      $("videoFile").addEventListener("change", (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+        $("fileName").textContent = file.name;
+        uploadVideo(file);
+      });
+
+      async function uploadVideo(file) {
+        if (!apiAvailable()) {
+          state.file = file.name;
+          renderJson();
+          log(`[video] 已选择 ${file.name}。请用后端服务打开网页，才能保存视频文件。`);
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append("video", file);
+        log(`[upload] 正在保存 ${file.name} 到项目 uploads/ 目录...`);
+
+        const response = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+        });
+        const result = await response.json();
+        if (!result.ok) {
+          log(`[error] ${result.error}`);
+          return;
+        }
+        state.file = result.path;
+        $("fileName").textContent = `${result.filename} 已保存`;
+        renderJson();
+        log(`[upload] 已保存到 ${result.path}`);
+      }
+
+      document.querySelectorAll(".platform-card").forEach((card) => {
+        card.addEventListener("click", (event) => {
+          if (event.target.tagName === "BUTTON") return;
+          const platform = card.dataset.platform;
+          card.classList.toggle("selected");
+          const selected = card.classList.contains("selected");
+          state.platforms = selected
+            ? Array.from(new Set([...state.platforms, platform]))
+            : state.platforms.filter((item) => item !== platform);
+          card.querySelector(".badge").textContent = selected ? "已选择" : "未选择";
+          card.querySelector(".badge").className = selected ? "badge ok" : "badge warn";
+          renderJson();
+        });
+      });
+
+      document.querySelectorAll(".mode").forEach((button) => {
+        button.addEventListener("click", () => {
+          document.querySelectorAll(".mode").forEach((item) => item.classList.remove("selected"));
+          button.classList.add("selected");
+          state.mode = button.dataset.mode;
+          renderJson();
+        });
+      });
+
+      ["title", "description", "tags", "account"].forEach((id) => {
+        $(id).addEventListener("input", renderJson);
+      });
+
+      $("loadSample").addEventListener("click", () => {
+        state.file = "hyperframes/finalvideo.mp4";
+        $("fileName").textContent = "hyperframes/finalvideo.mp4";
+        $("title").value = "美国求职，别再手动改简历";
+        $("description").value = "用 AI 分析 JD、优化 LinkedIn 和英文简历，再生成 Cover Letter，还能模拟英文面试。";
+        $("tags").value = "AI,留学生求职,美国求职";
+        $("account").value = "creator";
+        renderJson();
+        log("[sample] 已载入示例任务");
+      });
+
+      $("previewJson").addEventListener("click", () => {
+        renderJson();
+        log("[preview] 已刷新任务 JSON");
+      });
+
+      async function createTaskOnBackend() {
+        if (!apiAvailable()) {
+          renderJson();
+          log("[task] 当前是 file:// 打开，只能预览 JSON。请用 python -m ai_video_publisher serve 启动后端。");
+          return;
+        }
+        const response = await fetch("/api/task", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(collectTask()),
+        });
+        const result = await response.json();
+        if (!result.ok) {
+          log(`[error] ${result.error}`);
+          return;
+        }
+        $("jsonPreview").textContent = JSON.stringify(result.task, null, 2);
+        renderCommands(result.commands);
+        log(`[task] 已写入 ${result.task_path}`);
+      }
+
+      $("createTask").addEventListener("click", async () => {
+        renderJson();
+        await createTaskOnBackend();
+      });
+
+      $("startPublish").addEventListener("click", async () => {
+        await createTaskOnBackend();
+        const task = collectTask();
+        log(`[run] 准备发布到 ${task.platforms.join(", ")}`);
+        log("[run] 下一步在终端执行 publish 命令；扫码登录类流程暂不从网页直接触发。");
+        document.querySelectorAll(".step").forEach((step, index) => {
+          setTimeout(() => {
+            step.classList.add("done");
+            step.querySelector(".badge").className = "badge ok";
+            step.querySelector(".badge").textContent = index === 4 ? "人工确认" : "完成";
+          }, index * 220);
+        });
+      });
+
+      renderJson();
+    </script>
+  </body>
+</html>

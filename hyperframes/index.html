@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Study Abroad AI Job Search</title>
+    <style>
+      :root {
+        --bg: #b1cfe5;
+        --navy: #243e56;
+        --panel: #f8fbfd;
+        --blue: #1774b8;
+        --teal: #3aa6a1;
+        --highlight: #fff2a8;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        font-family: "PingFang SC", "Hiragino Sans GB", Arial, sans-serif;
+      }
+
+      [data-composition-id="ai-job-search-video"] {
+        position: relative;
+        width: 720px;
+        height: 1280px;
+        overflow: hidden;
+        background: var(--bg);
+        color: var(--navy);
+      }
+
+      .scene {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        padding: 56px 48px 132px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 26px;
+      }
+
+      .bg-photo {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0.46;
+        transform: scale(1.08);
+      }
+
+      .wash {
+        position: absolute;
+        inset: 0;
+        background: rgba(177, 207, 229, 0.58);
+      }
+
+      .caption {
+        position: absolute;
+        left: 42px;
+        right: 42px;
+        bottom: 188px;
+        z-index: 20;
+        text-align: center;
+        font-size: 46px;
+        line-height: 1.18;
+        font-weight: 800;
+        color: #fff;
+        text-shadow:
+          0 3px 0 rgba(31, 54, 75, 0.88),
+          0 0 14px rgba(31, 54, 75, 0.55);
+      }
+
+      .caption span {
+        display: block;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 58px;
+        padding: 8px 24px;
+        border-radius: 12px;
+        background: rgba(42, 67, 89, 0.92);
+        color: #fff;
+        font-weight: 800;
+        font-size: 34px;
+      }
+
+      .panel {
+        position: relative;
+        z-index: 3;
+        border-radius: 24px;
+        background: rgba(248, 251, 253, 0.94);
+        box-shadow: 0 20px 50px rgba(35, 62, 82, 0.18);
+        border: 1px solid rgba(255, 255, 255, 0.8);
+      }
+
+      .hero-title {
+        position: relative;
+        z-index: 4;
+        margin: 0;
+        color: #fff;
+        font-size: 58px;
+        line-height: 1.1;
+        font-weight: 850;
+        text-align: center;
+        text-shadow: 0 4px 0 rgba(36, 62, 86, 0.86);
+      }
+
+      .campus-card {
+        position: relative;
+        z-index: 3;
+        width: 100%;
+        height: 360px;
+        overflow: hidden;
+        border-radius: 24px;
+      }
+
+      .campus-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .desktop {
+        height: 650px;
+        padding: 28px;
+      }
+
+      .window-stack {
+        position: relative;
+        height: 100%;
+      }
+
+      .mini-window {
+        position: absolute;
+        width: 390px;
+        min-height: 128px;
+        padding: 18px 20px;
+        border-radius: 16px;
+        background: #fff;
+        color: var(--navy);
+        box-shadow: 0 12px 24px rgba(33, 57, 77, 0.14);
+        font-weight: 750;
+        font-size: 26px;
+      }
+
+      .mini-window span {
+        display: block;
+        margin-top: 16px;
+        height: 16px;
+        border-radius: 10px;
+        background: rgba(36, 62, 86, 0.16);
+      }
+
+      .linkedin-shot {
+        position: relative;
+        height: 780px;
+        overflow: hidden;
+        padding: 0;
+      }
+
+      .linkedin-shot img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0.78;
+      }
+
+      .checklist {
+        position: absolute;
+        right: 24px;
+        bottom: 72px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        z-index: 4;
+      }
+
+      .check {
+        min-width: 280px;
+        padding: 10px 18px;
+        border-radius: 10px;
+        background: rgba(42, 67, 89, 0.94);
+        color: #fff;
+        font-size: 30px;
+        font-weight: 850;
+      }
+
+      .check::before {
+        content: "✓";
+        color: #162b3a;
+        margin-right: 14px;
+      }
+
+      .split-ui {
+        display: grid;
+        grid-template-columns: 1fr 0.86fr;
+        gap: 18px;
+        min-height: 600px;
+        padding: 26px;
+      }
+
+      .ui-card {
+        border-radius: 18px;
+        background: #fff;
+        padding: 22px;
+        box-shadow: 0 12px 26px rgba(33, 57, 77, 0.12);
+      }
+
+      .ui-title {
+        font-size: 28px;
+        font-weight: 850;
+        margin-bottom: 22px;
+      }
+
+      .line {
+        height: 16px;
+        margin: 16px 0;
+        border-radius: 12px;
+        background: rgba(36, 62, 86, 0.16);
+      }
+
+      .keyword {
+        display: inline-block;
+        margin: 8px 6px 0 0;
+        padding: 10px 16px;
+        border-radius: 999px;
+        background: var(--teal);
+        color: #fff;
+        font-weight: 800;
+        font-size: 22px;
+      }
+
+      .highlight-line {
+        margin-top: 22px;
+        padding: 13px 16px;
+        border-radius: 12px;
+        background: var(--highlight);
+        font-size: 21px;
+        font-weight: 800;
+      }
+
+      .interview-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        padding: 26px;
+        min-height: 610px;
+      }
+
+      .question {
+        margin-top: 16px;
+        padding: 16px;
+        border-radius: 14px;
+        background: rgba(42, 67, 89, 0.94);
+        color: #fff;
+        font-size: 22px;
+        font-weight: 800;
+      }
+
+      .cta-card {
+        width: 100%;
+        min-height: 500px;
+        padding: 44px 40px;
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+        justify-content: center;
+      }
+
+      .input-box {
+        min-height: 138px;
+        padding: 24px;
+        border: 2px solid rgba(36, 62, 86, 0.26);
+        border-radius: 20px;
+        background: rgba(235, 245, 250, 0.86);
+        font-size: 31px;
+        line-height: 1.32;
+        font-weight: 800;
+      }
+
+      .button {
+        align-self: center;
+        min-width: 280px;
+        padding: 20px 42px;
+        border-radius: 999px;
+        background: var(--blue);
+        color: #fff;
+        font-size: 32px;
+        font-weight: 850;
+        text-align: center;
+        box-shadow: 0 10px 26px rgba(23, 116, 184, 0.28);
+      }
+
+      .transition-wipe {
+        position: absolute;
+        inset: 0;
+        z-index: 50;
+        background: var(--bg);
+        transform: translateX(-105%);
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      data-composition-id="ai-job-search-video"
+      data-width="720"
+      data-height="1280"
+      data-start="0"
+      data-duration="12"
+      data-track-index="0"
+    >
+      <section class="scene" id="scene-01">
+        <img class="bg-photo" src="assets/input/reference_nyc_skyline.jpg" />
+        <div class="wash"></div>
+        <h1 class="hero-title">纽约留学生求职</h1>
+        <div class="campus-card panel">
+          <img src="assets/input/reference_columbia_graduation.jpg" />
+        </div>
+        <div class="caption">在纽约读书找工作</div>
+      </section>
+
+      <section class="scene" id="scene-02">
+        <img class="bg-photo" src="assets/input/reference_nyc_skyline.jpg" />
+        <div class="wash"></div>
+        <div class="desktop panel">
+          <div class="window-stack">
+            <div class="mini-window" style="left: 10px; top: 18px">Resume_v8.docx<span></span><span></span></div>
+            <div class="mini-window" style="right: 10px; top: 118px">Job Description<span></span><span></span></div>
+            <div class="mini-window" style="left: 42px; top: 270px">LinkedIn Profile<span></span><span></span></div>
+            <div class="mini-window" style="right: 30px; top: 424px">Recruiter Email<span></span><span></span></div>
+          </div>
+        </div>
+        <div class="caption">别只靠手动改简历</div>
+      </section>
+
+      <section class="scene" id="scene-03">
+        <div class="pill">AI 优化 LinkedIn</div>
+        <div class="linkedin-shot panel">
+          <img src="assets/input/reference_linkedin_style.jpg" />
+          <div class="checklist">
+            <div class="check">完善主页</div>
+            <div class="check">突出技能</div>
+            <div class="check">扩大人脉</div>
+            <div class="check">提升曝光</div>
+          </div>
+        </div>
+        <div class="caption">AI 优化 LinkedIn</div>
+      </section>
+
+      <section class="scene" id="scene-04">
+        <img class="bg-photo" src="assets/input/reference_columbia_graduation.jpg" />
+        <div class="wash"></div>
+        <div class="split-ui panel">
+          <div class="ui-card">
+            <div class="ui-title">Job Description</div>
+            <div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div>
+            <div class="highlight-line">Resume keywords highlighted</div>
+          </div>
+          <div class="ui-card">
+            <div class="ui-title">AI Keywords</div>
+            <span class="keyword">Data</span>
+            <span class="keyword">SQL</span>
+            <span class="keyword">Marketing</span>
+            <span class="keyword">Strategy</span>
+          </div>
+        </div>
+        <div class="caption">分析 JD / 优化关键词</div>
+      </section>
+
+      <section class="scene" id="scene-05">
+        <img class="bg-photo" src="assets/input/reference_columbia_graduation.jpg" />
+        <div class="wash"></div>
+        <div class="interview-grid panel">
+          <div class="ui-card">
+            <div class="ui-title">Cover Letter</div>
+            <div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div>
+          </div>
+          <div class="ui-card">
+            <div class="ui-title">Mock Interview</div>
+            <div class="question">Tell me about yourself.</div>
+            <div class="question">Why this role?</div>
+            <div class="question">Your strength?</div>
+          </div>
+        </div>
+        <div class="caption"><span>写 Cover Letter</span><span>模拟英文面试</span></div>
+      </section>
+
+      <section class="scene" id="scene-06">
+        <img class="bg-photo" src="assets/input/reference_nyc_skyline.jpg" />
+        <div class="wash"></div>
+        <div class="cta-card panel">
+          <div class="ui-title" style="font-size: 42px">AI 视频制作</div>
+          <div class="input-box">海外留学生怎么用 AI 提升求职效率</div>
+          <div class="button">一键生成</div>
+        </div>
+        <div class="caption"><span>立即尝试</span><span>用 AI 帮助你的求职</span></div>
+      </section>
+
+      <div class="transition-wipe" id="wipe"></div>
+      <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+      <script>
+        window.__timelines = window.__timelines || {};
+        const tl = gsap.timeline({ paused: true });
+        const scenes = ["#scene-01", "#scene-02", "#scene-03", "#scene-04", "#scene-05", "#scene-06"];
+        scenes.forEach((scene, index) => {
+          const start = index * 2;
+          tl.set(scene, { opacity: index === 0 ? 1 : 0 }, 0);
+          if (index > 0) tl.set(scene, { opacity: 1 }, start);
+          tl.from(`${scene} .panel`, { y: 48, opacity: 0, duration: 0.48, ease: "power3.out" }, start + 0.16);
+          tl.from(`${scene} .caption`, { y: 34, opacity: 0, duration: 0.42, ease: "back.out(1.4)" }, start + 0.3);
+          tl.from(`${scene} .pill, ${scene} .hero-title`, { scale: 0.92, opacity: 0, duration: 0.42, ease: "expo.out" }, start + 0.22);
+          tl.from(`${scene} .mini-window, ${scene} .check, ${scene} .keyword, ${scene} .question, ${scene} .line`, {
+            y: 18,
+            opacity: 0,
+            duration: 0.32,
+            stagger: 0.05,
+            ease: "power2.out"
+          }, start + 0.48);
+          if (index < scenes.length - 1) {
+            tl.set("#wipe", { xPercent: -105 }, start + 1.72);
+            tl.to("#wipe", { xPercent: 0, duration: 0.16, ease: "power2.in" }, start + 1.72);
+            tl.set(scene, { opacity: 0 }, start + 1.9);
+            tl.to("#wipe", { xPercent: 105, duration: 0.16, ease: "power2.out" }, start + 1.9);
+          }
+        });
+        tl.to("#scene-06 .caption", { scale: 1.03, duration: 0.28, ease: "power2.out" }, 11.55);
+        window.__timelines["ai-job-search-video"] = tl;
+      </script>
+    </div>
+  </body>
+</html>

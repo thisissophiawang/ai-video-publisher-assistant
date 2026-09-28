@@ -1,0 +1,29 @@
+{
+  "project_name": "hyperframes_ai_video_automation",
+  "root_policy": "All HyperFrames-generated and HyperFrames-related files must be stored inside this hyperframes directory.",
+  "active_video": {
+    "topic": "海外留学生怎么用 AI 提升求职效率",
+    "duration_seconds": 12,
+    "resolution": "720x1280",
+    "aspect_ratio": "9:16",
+    "format": "mp4",
+    "final_output": "exports/study_abroad_ai_job_search_12s_720p.mp4"
+  },
+  "directories": {
+    "briefs": "Video briefs and delivery specifications",
+    "scripts": "Narration, shot lists, and structured script files",
+    "prompts": "Prompts for video, image, voice, subtitles, and editing",
+    "assets_input": "Original user-provided source materials",
+    "assets_images": "Generated or selected images",
+    "assets_video": "Generated clips and intermediate video assets",
+    "assets_audio": "Voiceover and sound effect files",
+    "assets_subtitles": "Subtitle files",
+    "assets_music": "Background music files",
+    "assets_cover": "Cover images and thumbnails",
+    "renders": "Intermediate renders and previews",
+    "exports": "Final deliverables",
+    "logs": "Generation logs, QA notes, and errors",
+    "metadata": "Manifests and platform metadata",
+    "tmp": "Temporary files"
+  }
+}
