@@ -35,7 +35,7 @@ finalvideo.mp4
 
 ![发发布ai小助手发布助手进展](docs/publish_progress.png)
 
-![发发布ai小助手发布任务日志task log](docs/task_log.png）
+![发发布ai小助手发布任务日志](docs/task_log.png）
 
 ## 项目目标
 
