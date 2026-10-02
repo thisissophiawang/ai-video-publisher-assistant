@@ -26,6 +26,12 @@ finalvideo.mp4
 
 当前版本默认不会点击最终发布按钮，需要用户自己在平台页面确认后手动发布。
 
+## 网页界面
+
+![发发布ai小助手网页首页](docs/web-front-page.png)
+
+左侧填写视频、标题、正文、标签并选择平台；点「开始上传流程」一键触发浏览器自动上传，右侧实时显示 5 步发布进度和后端日志。
+
 ## 项目目标
 
 这个项目解决的是：
@@ -75,6 +81,8 @@ finalvideo.mp4
 │   └── finalvideo.mp4
 ├── examples/
 │   └── task.example.json
+├── docs/
+│   └── web-front-page.png
 ├── uploads/
 └── task.web.json
 ```
