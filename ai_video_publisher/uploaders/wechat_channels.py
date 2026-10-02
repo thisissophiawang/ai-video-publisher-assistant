@@ -28,7 +28,5 @@ class WechatChannelsUploader(Uploader):
             await self.fill_first_available(page, ["描述", "简介", "说点什么", "请输入描述"], task.description)
         await self.fill_tags(page, task.tags)
 
-        if task.publish_now:
-            await pause_for_user("已填写视频号发布信息。请确认页面无误后手动点击发表/发布。")
-        else:
-            await pause_for_user("视频号已上传并填写信息，当前停在发布前确认页。")
+        print("[STEP 4] 视频号: 标题/简介/标签已填写（未找到的字段看上方提示，需手动补）")
+        print("视频号已上传并填写信息，停在发布前确认页（当前版本不会自动点击发布）。")

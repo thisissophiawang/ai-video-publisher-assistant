@@ -28,7 +28,5 @@ class DouyinUploader(Uploader):
             await self.fill_first_available(page, ["简介", "描述", "添加作品描述"], task.description)
         await self.fill_tags(page, task.tags)
 
-        if task.publish_now:
-            await pause_for_user("已填写抖音发布信息。请确认页面无误后手动点击发布。")
-        else:
-            await pause_for_user("抖音已上传并填写信息，当前停在发布前确认页。")
+        print("[STEP 4] 抖音: 标题/简介/标签已填写（未找到的字段看上方提示，需手动补）")
+        print("抖音已上传并填写信息，停在发布前确认页（当前版本不会自动点击发布）。")

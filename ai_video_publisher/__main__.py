@@ -73,6 +73,8 @@ async def main_async() -> None:
         return
 
     if args.command == "upload-video":
+        from ai_video_publisher.browser import wait_for_user_confirm
+
         tags = [tag.strip() for tag in args.tags.split(",") if tag.strip()]
         task = PublishTask.from_dict(
             {
@@ -85,23 +87,28 @@ async def main_async() -> None:
             },
             base_dir=Path.cwd(),
         )
+
+        async def upload_and_hold(uploader, context):
+            await uploader.publish(context, task)
+            await wait_for_user_confirm("已上传并填写信息，停在发布前确认页。", [context])
+
         await run_with_uploader(
             args.platform,
             args.account,
             args.headless,
-            lambda uploader, context: uploader.publish(context, task),
+            upload_and_hold,
         )
         return
 
     if args.command == "publish":
         task = PublishTask.from_file(args.task)
-        for platform in task.platforms:
-            await run_with_uploader(
-                platform,
-                args.account,
-                args.headless,
-                lambda uploader, context, current_task=task: uploader.publish(context, current_task),
-            )
+        print(f"[STEP 1] 任务读取完成: 平台 {'、'.join(task.platforms)}")
+
+        from ai_video_publisher.publish_flow import publish_task
+
+        all_ok = await publish_task(task, account=args.account, headless=args.headless)
+        if not all_ok:
+            raise SystemExit("部分平台发布失败，详见上方日志。")
         return
 
 

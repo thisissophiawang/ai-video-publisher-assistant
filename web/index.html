@@ -654,7 +654,7 @@
               <div class="section-header">
                 <div>
                   <div class="section-title">创建发布任务</div>
-                  <div class="section-hint">第一版先生成任务配置，后续接入后端执行 Playwright 上传。</div>
+                  <div class="section-hint">填写完成后可一键启动 Chrome 自动上传，停在发布确认页。</div>
                 </div>
                 <button class="btn ghost" id="loadSample" type="button">载入示例</button>
               </div>
@@ -850,7 +850,7 @@
               <div class="section-header">
                 <div>
                   <div class="section-title">任务日志</div>
-                  <div class="section-hint">这里展示将来后端返回的执行日志。</div>
+                  <div class="section-hint">实时显示后端 publish 流程日志。</div>
                 </div>
               </div>
               <div class="section-body">
@@ -991,21 +991,28 @@
         if (!apiAvailable()) {
           renderJson();
           log("[task] 当前是 file:// 打开，只能预览 JSON。请用 python -m ai_video_publisher serve 启动后端。");
-          return;
+          return false;
         }
-        const response = await fetch("/api/task", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(collectTask()),
-        });
-        const result = await response.json();
+        let result;
+        try {
+          const response = await fetch("/api/task", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(collectTask()),
+          });
+          result = await response.json();
+        } catch (err) {
+          log(`[error] 无法连接后端: ${err}`);
+          return false;
+        }
         if (!result.ok) {
           log(`[error] ${result.error}`);
-          return;
+          return false;
         }
         $("jsonPreview").textContent = JSON.stringify(result.task, null, 2);
         renderCommands(result.commands);
         log(`[task] 已写入 ${result.task_path}`);
+        return true;
       }
 
       $("createTask").addEventListener("click", async () => {
@@ -1013,18 +1020,93 @@
         await createTaskOnBackend();
       });
 
+      function setStep(index, ok, text) {
+        const step = document.querySelectorAll("#progressList .step")[index - 1];
+        if (!step) return;
+        const badge = step.querySelector(".badge");
+        badge.className = ok ? "badge ok" : "badge warn";
+        badge.textContent = text;
+        step.classList.toggle("done", ok);
+      }
+
+      function resetProgress() {
+        const badges = ["就绪", "待执行", "待执行", "待执行", "待执行"];
+        badges.forEach((text, index) => setStep(index + 1, index === 0, text));
+      }
+
+      function handleBackendLine(line) {
+        const match = line.match(/^\[STEP (\d+)\]/);
+        if (match) {
+          const index = Number(match[1]);
+          setStep(index, true, index === 5 ? "人工确认" : "完成");
+        }
+      }
+
+      async function pollPublishStatus(offset) {
+        let data;
+        try {
+          const response = await fetch(`/api/publish/status?offset=${offset}`);
+          data = await response.json();
+        } catch (err) {
+          setTimeout(() => pollPublishStatus(offset), 2000);
+          return;
+        }
+
+        (data.lines || []).forEach((line) => {
+          log(line);
+          handleBackendLine(line);
+        });
+
+        if (!data.started) return;
+
+        if (data.running) {
+          setTimeout(() => pollPublishStatus(data.offset), 1200);
+          return;
+        }
+
+        $("startPublish").disabled = false;
+        if (data.status === "success") {
+          log("[done] 流程结束。到 Chrome 里确认并手动点击发布，完成后关闭浏览器窗口即可。");
+        } else {
+          log("[error] 发布流程已退出但存在失败，详情看上方日志。");
+        }
+      }
+
       $("startPublish").addEventListener("click", async () => {
-        await createTaskOnBackend();
+        if (!apiAvailable()) {
+          log("[run] 当前是 file:// 打开。请先运行 python -m ai_video_publisher serve 启动后端。");
+          return;
+        }
+        if ($("startPublish").disabled) return;
+
+        renderJson();
+        const created = await createTaskOnBackend();
+        if (!created) return;
+
         const task = collectTask();
         log(`[run] 准备发布到 ${task.platforms.join(", ")}`);
-        log("[run] 下一步在终端执行 publish 命令；扫码登录类流程暂不从网页直接触发。");
-        document.querySelectorAll(".step").forEach((step, index) => {
-          setTimeout(() => {
-            step.classList.add("done");
-            step.querySelector(".badge").className = "badge ok";
-            step.querySelector(".badge").textContent = index === 4 ? "人工确认" : "完成";
-          }, index * 220);
-        });
+        log("[safe] 默认停在发布确认页，不会自动点击最终发布按钮。");
+
+        let result;
+        try {
+          const response = await fetch("/api/publish", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(task),
+          });
+          result = await response.json();
+        } catch (err) {
+          log(`[error] 无法连接后端: ${err}`);
+          return;
+        }
+        if (!result.ok) {
+          log(`[error] ${result.error}`);
+          return;
+        }
+
+        resetProgress();
+        $("startPublish").disabled = true;
+        pollPublishStatus(0);
       });
 
       renderJson();

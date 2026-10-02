@@ -41,6 +41,7 @@ class Uploader(ABC):
                 locator = page.locator("input[type=file]").last
                 await locator.wait_for(state="attached", timeout=45000 if attempt == 1 else 8000)
                 await locator.set_input_files(video_path, timeout=20000)
+                print(f"[STEP 3] {platform_name}: 视频文件已提交，平台处理中")
                 return
             except Exception as exc:
                 last_error = exc
